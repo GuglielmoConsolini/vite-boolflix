@@ -2,80 +2,82 @@
 import store from './data/store.js';
 import axios from 'axios';
 export default {
-  components: {
+components: {
     
   },
-  data() {
+data() {
     return {
       store,
       listaFilm: [],
-      listaSerietv: [],
-      
+      listaSerietv: [], 
     }
-  },  
+},  
   
-  methods: {
+methods: {
 
   // RICERCA SERIE TV
 
-    searchSerietv(){ 
-    const options = {
-    method: 'GET',
-    url: 'https://api.themoviedb.org/3/search/tv',
-    params: {query: this.query, include_adult: 'false', language: 'en-US', page: '1'},
-    headers: {
-      accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmOGYyYTNhZjllZDBhYzg4M2RkMWZlMTNiZDVjZjYyYyIsInN1YiI6IjY2NTc0NDA0YTM0ZDFlNzBkNWVmMWUyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Z-BjUO_PQ4fELYiDy7416HtxhzXgAwbiZJPdIn8o_nI'
-  }
-};
+searchSerietv(){ 
+  const options = {
+      method: 'GET',
+      url: 'https://api.themoviedb.org/3/search/tv',
+      params: {query: this.query, include_adult: 'false', language: 'en-US', page: '1'},
+      headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmOGYyYTNhZjllZDBhYzg4M2RkMWZlMTNiZDVjZjYyYyIsInN1YiI6IjY2NTc0NDA0YTM0ZDFlNzBkNWVmMWUyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Z-BjUO_PQ4fELYiDy7416HtxhzXgAwbiZJPdIn8o_nI'
+      }
+    };
 
-axios
-  .request(options)
-  .then((response) => {
-    this.listaSerietv = response.data.results;
-    console.log(this.listaSerietv);
-  })
-  .catch(function (error) {
-    console.error(error);
-  });
- },
+  axios
+      .request(options)
+      .then((response) => {
+        this.listaSerietv = response.data.results;
+        console.log(this.listaSerietv);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+},
 
 //  RICERCA FILMS
 
-   searchFilms(){ 
+searchFilms(){ 
     const options = {
-    method: 'GET',
-    url: 'https://api.themoviedb.org/3/search/movie',
-    params: {query: this.query, include_adult: 'false', language: 'en-US', page: '1'},
-    headers: {
-      accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmOGYyYTNhZjllZDBhYzg4M2RkMWZlMTNiZDVjZjYyYyIsInN1YiI6IjY2NTc0NDA0YTM0ZDFlNzBkNWVmMWUyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Z-BjUO_PQ4fELYiDy7416HtxhzXgAwbiZJPdIn8o_nI'
-  }
-};
+      method: 'GET',
+      url: 'https://api.themoviedb.org/3/search/movie',
+      params: {query: this.query, include_adult: 'false', language: 'en-US', page: '1'},
+      headers: {
+       accept: 'application/json',
+       Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmOGYyYTNhZjllZDBhYzg4M2RkMWZlMTNiZDVjZjYyYyIsInN1YiI6IjY2NTc0NDA0YTM0ZDFlNzBkNWVmMWUyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Z-BjUO_PQ4fELYiDy7416HtxhzXgAwbiZJPdIn8o_nI'
+      }
+    };
 
-axios
-  .request(options)
-  .then((response) => {
-    this.listaFilm = response.data.results;
-    console.log(this.listaFilm);
-  })
-  .catch(function (error) {
-    console.error(error);
-  });
- }
-  },
+    axios
+        .request(options)
+        .then((response) => {
+          this.listaFilm = response.data.results;
+           console.log(this.listaFilm);
+        })
+        .catch(function (error) {
+           console.error(error);
+        });
+},
 
-  created() {
-
-    this.searchFilms();
-    
-
-  },
-
-  mounted() {
-    
-  }
+// RICERCA COMPLETA
+searchAll(){
+   this.searchFilms();
+   this.searchSerietv();
 }
+},
+
+created() {
+},
+
+mounted() {
+}
+
+}
+
 </script>
 
 <template>
@@ -86,7 +88,7 @@ axios
 
   <div class="search-bar position-absolute top-0 end-0">
       <input v-model="query" type="text" placeholder="Cerca un film...">
-      <button class="btn btn-danger" @click="searchFilms">Cerca</button>
+      <button class="btn btn-danger" @click="searchAll">Cerca</button>
   </div>
 
     <h2>Films</h2>
@@ -101,8 +103,8 @@ axios
       <h2>Serie TV</h2>
     <div class="results">
       <div v-for="serie in listaSerietv" :key="serie.id" class="film-card">
-        <h2>{{ serie.title }}</h2>
-        <p><strong>Titolo Originale:</strong> {{ serie.original_title }}</p>
+        <h2>{{ serie.name }}</h2>
+        <p><strong>Titolo Originale:</strong> {{ serie.original_name }}</p>
         <p><strong>Lingua:</strong> {{ serie.original_language }}</p>
         <p><strong>Voto:</strong> {{ serie.vote_average }}</p>
       </div>
