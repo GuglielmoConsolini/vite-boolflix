@@ -9,11 +9,38 @@ export default {
     return {
       store,
       listaFilm: [],
+      listaSerietv: [],
       
     }
   },  
   
   methods: {
+
+  // RICERCA SERIE TV
+
+    searchSerietv(){ 
+    const options = {
+    method: 'GET',
+    url: 'https://api.themoviedb.org/3/search/tv',
+    params: {query: this.query, include_adult: 'false', language: 'en-US', page: '1'},
+    headers: {
+      accept: 'application/json',
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmOGYyYTNhZjllZDBhYzg4M2RkMWZlMTNiZDVjZjYyYyIsInN1YiI6IjY2NTc0NDA0YTM0ZDFlNzBkNWVmMWUyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Z-BjUO_PQ4fELYiDy7416HtxhzXgAwbiZJPdIn8o_nI'
+  }
+};
+
+axios
+  .request(options)
+  .then((response) => {
+    this.listaSerietv = response.data.results;
+    console.log(this.listaSerietv);
+  })
+  .catch(function (error) {
+    console.error(error);
+  });
+ },
+
+//  RICERCA FILMS
 
    searchFilms(){ 
     const options = {
@@ -41,6 +68,7 @@ axios
   created() {
 
     this.searchFilms();
+    
 
   },
 
@@ -51,17 +79,32 @@ axios
 </script>
 
 <template>
+
   <h1>Boolflix</h1>
+
+<!-- SEARCH BAR -->
+
   <div class="search-bar position-absolute top-0 end-0">
       <input v-model="query" type="text" placeholder="Cerca un film...">
       <button class="btn btn-danger" @click="searchFilms">Cerca</button>
-    </div>
+  </div>
+
+    <h2>Films</h2>
     <div class="results">
       <div v-for="film in listaFilm" :key="film.id" class="film-card">
         <h2>{{ film.title }}</h2>
         <p><strong>Titolo Originale:</strong> {{ film.original_title }}</p>
         <p><strong>Lingua:</strong> {{ film.original_language }}</p>
         <p><strong>Voto:</strong> {{ film.vote_average }}</p>
+      </div>
+    </div>
+      <h2>Serie TV</h2>
+    <div class="results">
+      <div v-for="serie in listaSerietv" :key="serie.id" class="film-card">
+        <h2>{{ serie.title }}</h2>
+        <p><strong>Titolo Originale:</strong> {{ serie.original_title }}</p>
+        <p><strong>Lingua:</strong> {{ serie.original_language }}</p>
+        <p><strong>Voto:</strong> {{ serie.vote_average }}</p>
       </div>
     </div>
 </template>
