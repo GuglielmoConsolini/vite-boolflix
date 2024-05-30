@@ -10,6 +10,8 @@ data() {
       store,
       listaFilm: [],
       listaSerietv: [], 
+      query: '',
+      path: '',
     }
 },  
   
@@ -63,6 +65,11 @@ searchFilms(){
         });
 },
 
+// FUNZIONE PER GENERARE L'INDIRITTO DELLE IMMAGINI
+getPosterUrl(path) {
+    return path ? `https://image.tmdb.org/t/p/w342${path}` : 'https://via.placeholder.com/342x513?text=No+Image';
+},
+
 // RICERCA COMPLETA
 searchAll(){
    this.searchFilms();
@@ -94,6 +101,7 @@ mounted() {
     <h2>Films</h2>
     <div class="results">
       <div v-for="film in listaFilm" :key="film.id" class="film-card">
+        <img :src="getPosterUrl(film.poster_path)" alt="Poster del film">
         <h2>{{ film.title }}</h2>
         <p><strong>Titolo Originale:</strong> {{ film.original_title }}</p>
         <p><strong>Lingua:</strong> {{ film.original_language }}</p>
@@ -103,6 +111,7 @@ mounted() {
       <h2>Serie TV</h2>
     <div class="results">
       <div v-for="serie in listaSerietv" :key="serie.id" class="film-card">
+        <img :src="getPosterUrl(serie.poster_path)" alt="Poster del film">
         <h2>{{ serie.name }}</h2>
         <p><strong>Titolo Originale:</strong> {{ serie.original_name }}</p>
         <p><strong>Lingua:</strong> {{ serie.original_language }}</p>
@@ -144,5 +153,12 @@ h1{
   margin: 10px;
   width: 300px;
   text-align: left;
+}
+
+.film-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 </style>
