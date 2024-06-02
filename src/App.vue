@@ -104,7 +104,7 @@ trendingAll() {
 },
 
 convertToStars(vote) {
-    return Math.ceil(vote / 2); // Arrotonda per eccesso e converte il voto in una scala da 1 a 5
+    return Math.ceil(vote / 2); 
 },
 
 
@@ -122,65 +122,82 @@ mounted() {
 </script>
 
 <template>
-
-  <h1>Boolflix</h1>
-
-<!-- SEARCH BAR -->
-
-  <div class="search-bar position-absolute top-0 end-0">
+  <header>
+    <h1>Boolflix</h1>
+    <div class="search-bar position-absolute top-0 end-0">
       <input v-model="query" type="text" placeholder="Cerca un film...">
       <button class="btn btn-danger" @click="searchAll">Cerca</button>
-  </div>
-  <div v-if="!isSearching">
-    <h2>Trending</h2>
-    <div class="results">
-      <div v-for="elemento in trending" :key="elemento.id" class="film-card">
-        <img :src="getPosterUrl(elemento.poster_path)" alt="Poster del film">
-        <h2>{{ elemento.title }}</h2>
-        <p><strong>Titolo Originale:</strong> {{ elemento.original_title }}</p>
-        <p><strong>Lingua:</strong> {{ elemento.original_language }}</p>
-        <p><strong>Voto:</strong>
-          <span v-for="n in 5" :key="n" class="star">
-              <i v-if="n <= convertToStars(elemento.vote_average)" class="fa fa-star"></i>
-              <i v-else class="fa fa-star-o"></i>
-          </span>
-        </p>
-      </div>
     </div>
-  </div>
+  </header>
+<!-- ****SEZIONE FILMS DI TENDENZA****   -->
 
-  <div v-if="isSearching">
-    <h2>Films</h2>
-    <div class="results">
-      <div v-for="film in listaFilm" :key="film.id" class="film-card">
-        <img :src="getPosterUrl(film.poster_path)" alt="Poster del film">
-        <h2>{{ film.title }}</h2>
-        <p><strong>Titolo Originale:</strong> {{ film.original_title }}</p>
-        <p><strong>Lingua:</strong> {{ film.original_language }}</p>
-        <p><strong>Voto:</strong>
-          <span v-for="n in 5" :key="n" class="star">
-              <i v-if="n <= convertToStars(film.vote_average)" class="fa fa-star"></i>
-              <i v-else class="fa fa-star-o"></i>
-          </span>
-        </p>
+      <div v-if="!isSearching">
+        <h2>Trending</h2>
+        <div class="results">
+          <div v-for="elemento in trending" :key="elemento.id" class="card">
+            <img :src="getPosterUrl(elemento.poster_path)" alt="Poster del film">
+            <div class="card-overlay">
+              <h2>{{ elemento.title || elemento.name }}</h2>
+              <p><strong>Titolo Originale:</strong> {{ elemento.original_title || elemento.original_name }}</p>
+              <p><strong>Lingua:</strong> {{ elemento.original_language }}</p>
+              <p><strong>Voto:</strong>
+                <span v-for="n in 5" :key="n" class="star">
+                  <i v-if="n <= convertToStars(elemento.vote_average)" class="fa fa-star"></i>
+                  <i v-else class="fa fa-star-o"></i>
+                </span>
+              </p>
+              <p><strong>Overview:</strong> {{ elemento.overview }}</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-      <h2>Serie TV</h2>
-    <div class="results">
-      <div v-for="serie in listaSerietv" :key="serie.id" class="film-card">
-        <img :src="getPosterUrl(serie.poster_path)" alt="Poster del film">
-        <h2>{{ serie.name }}</h2>
-        <p><strong>Titolo Originale:</strong> {{ serie.original_name }}</p>
-        <p><strong>Lingua:</strong> {{ serie.original_language }}</p>
-        <p><strong>Voto:</strong>
-          <span v-for="n in 5" :key="n" class="star">
-              <i v-if="n <= convertToStars(serie.vote_average)" class="fa fa-star"></i>
-              <i v-else class="fa fa-star-o"></i>
-          </span>
-        </p>
+  
+
+<!-- ****SEZIONE FILMS*****   -->
+
+      <div v-if="isSearching">
+        <h2>Film</h2>
+        <div class="results">
+          <div v-for="film in listaFilm" :key="film.id" class="card">
+            <img :src="getPosterUrl(film.poster_path)" alt="Poster del film">
+            <div class="card-overlay">
+              <h2>{{ film.title || film.name }}</h2>
+              <p><strong>Titolo Originale:</strong> {{ film.original_title || film.original_name }}</p>
+              <p><strong>Lingua:</strong> {{ film.original_language }}</p>
+              <p><strong>Voto:</strong>
+                <span v-for="n in 5" :key="n" class="star">
+                  <i v-if="n <= convertToStars(film.vote_average)" class="fa fa-star"></i>
+                  <i v-else class="fa fa-star-o"></i>
+                </span>
+              </p>
+              <p><strong>Overview:</strong> {{ film.overview }}</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+  
+<!-- *****SEZIONE SERIE TV***** -->
+
+      <div v-if="isSearching">
+        <h2>Serie TV</h2>
+        <div class="results">
+          <div v-for="serie in listaSerietv" :key="serie.id" class="card">
+            <img :src="getPosterUrl(serie.poster_path)" alt="Poster del film">
+            <div class="card-overlay">
+              <h2>{{ serie.title || serie.name }}</h2>
+              <p><strong>Titolo Originale:</strong> {{ serie.original_title || serie.original_name }}</p>
+              <p><strong>Lingua:</strong> {{ serie.original_language }}</p>
+              <p><strong>Voto:</strong>
+                <span v-for="n in 5" :key="n" class="star">
+                  <i v-if="n <= convertToStars(serie.vote_average)" class="fa fa-star"></i>
+                  <i v-else class="fa fa-star-o"></i>
+                </span>
+              </p>
+              <p><strong>Overview:</strong> {{ serie.overview }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 </template>
 
 <style scoped>
@@ -209,25 +226,51 @@ h1{
   justify-content: center;
 }
 
-.film-card {
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 20px;
+
+.card {
+  position: relative;
   margin: 10px;
-  width: 300px;
-  text-align: left;
+  width: 340px;
+  height: 560px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s;
 }
 
-.film-card img {
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card img {
   width: 100%;
-  height: auto;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.card:hover .card-overlay {
+  opacity: 1;
 }
 
 .star {
     color: gold;
     font-size: 20px;
     margin-right: 2px;
+    margin-left: 2px;
 }
 </style>
