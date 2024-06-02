@@ -10,8 +10,10 @@ data() {
       store,
       listaFilm: [],
       listaSerietv: [], 
+      trending: [],
       query: '',
       path: '',
+      isSearching: false,
     }
 },  
   
@@ -34,6 +36,7 @@ searchSerietv(){
       .request(options)
       .then((response) => {
         this.listaSerietv = response.data.results;
+        this.isSearching = true;
         console.log(this.listaSerietv);
       })
       .catch(function (error) {
@@ -58,6 +61,7 @@ searchFilms(){
         .request(options)
         .then((response) => {
           this.listaFilm = response.data.results;
+          this.isSearching = true;
            console.log(this.listaFilm);
         })
         .catch(function (error) {
@@ -74,10 +78,40 @@ getPosterUrl(path) {
 searchAll(){
    this.searchFilms();
    this.searchSerietv();
-}
+},
+
+trendingAll() {
+    const options = {
+      method: 'GET',
+      url: 'https://api.themoviedb.org/3/trending/all/day',
+      params: {language: 'en-US'},
+      headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmOGYyYTNhZjllZDBhYzg4M2RkMWZlMTNiZDVjZjYyYyIsInN1YiI6IjY2NTc0NDA0YTM0ZDFlNzBkNWVmMWUyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Z-BjUO_PQ4fELYiDy7416HtxhzXgAwbiZJPdIn8o_nI'
+      }
+    };
+
+    axios
+      .request(options)
+      .then((response) => {
+        this.trending = response.data.results;
+        this.isSearching = false;
+        console.log(this.trending);
+      })
+      .catch(function (error) {
+        console.error(error);
+       });
+},
+
+convertToStars(vote) {
+    return Math.ceil(vote / 2); // Arrotonda per eccesso e converte il voto in una scala da 1 a 5
+},
+
+
 },
 
 created() {
+  this.trendingAll();
 },
 
 mounted() {
@@ -97,7 +131,25 @@ mounted() {
       <input v-model="query" type="text" placeholder="Cerca un film...">
       <button class="btn btn-danger" @click="searchAll">Cerca</button>
   </div>
+  <div v-if="!isSearching">
+    <h2>Trending</h2>
+    <div class="results">
+      <div v-for="elemento in trending" :key="elemento.id" class="film-card">
+        <img :src="getPosterUrl(elemento.poster_path)" alt="Poster del film">
+        <h2>{{ elemento.title }}</h2>
+        <p><strong>Titolo Originale:</strong> {{ elemento.original_title }}</p>
+        <p><strong>Lingua:</strong> {{ elemento.original_language }}</p>
+        <p><strong>Voto:</strong>
+          <span v-for="n in 5" :key="n" class="star">
+              <i v-if="n <= convertToStars(elemento.vote_average)" class="fa fa-star"></i>
+              <i v-else class="fa fa-star-o"></i>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
 
+  <div v-if="isSearching">
     <h2>Films</h2>
     <div class="results">
       <div v-for="film in listaFilm" :key="film.id" class="film-card">
@@ -105,7 +157,12 @@ mounted() {
         <h2>{{ film.title }}</h2>
         <p><strong>Titolo Originale:</strong> {{ film.original_title }}</p>
         <p><strong>Lingua:</strong> {{ film.original_language }}</p>
-        <p><strong>Voto:</strong> {{ film.vote_average }}</p>
+        <p><strong>Voto:</strong>
+          <span v-for="n in 5" :key="n" class="star">
+              <i v-if="n <= convertToStars(film.vote_average)" class="fa fa-star"></i>
+              <i v-else class="fa fa-star-o"></i>
+          </span>
+        </p>
       </div>
     </div>
       <h2>Serie TV</h2>
@@ -115,9 +172,15 @@ mounted() {
         <h2>{{ serie.name }}</h2>
         <p><strong>Titolo Originale:</strong> {{ serie.original_name }}</p>
         <p><strong>Lingua:</strong> {{ serie.original_language }}</p>
-        <p><strong>Voto:</strong> {{ serie.vote_average }}</p>
+        <p><strong>Voto:</strong>
+          <span v-for="n in 5" :key="n" class="star">
+              <i v-if="n <= convertToStars(serie.vote_average)" class="fa fa-star"></i>
+              <i v-else class="fa fa-star-o"></i>
+          </span>
+        </p>
       </div>
     </div>
+  </div>
 </template>
 
 <style scoped>
@@ -160,5 +223,11 @@ h1{
   height: auto;
   border-radius: 5px;
   margin-bottom: 10px;
+}
+
+.star {
+    color: gold;
+    font-size: 20px;
+    margin-right: 2px;
 }
 </style>
