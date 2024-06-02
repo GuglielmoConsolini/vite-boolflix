@@ -1,9 +1,14 @@
 <script>
 import store from './data/store.js';
 import axios from 'axios';
+import AppHeader from './components/AppHeader.vue';
+import MovieCard from './components/MovieCard.vue';
+import SerietvCard from './components/SerietvCard.vue';
 export default {
 components: {
-    
+    AppHeader,
+    MovieCard,
+    SerietvCard,
   },
 data() {
     return {
@@ -19,54 +24,10 @@ data() {
   
 methods: {
 
-  // RICERCA SERIE TV
-
-searchSerietv(){ 
-  const options = {
-      method: 'GET',
-      url: 'https://api.themoviedb.org/3/search/tv',
-      params: {query: this.query, include_adult: 'false', language: 'en-US', page: '1'},
-      headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmOGYyYTNhZjllZDBhYzg4M2RkMWZlMTNiZDVjZjYyYyIsInN1YiI6IjY2NTc0NDA0YTM0ZDFlNzBkNWVmMWUyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Z-BjUO_PQ4fELYiDy7416HtxhzXgAwbiZJPdIn8o_nI'
-      }
-    };
-
-  axios
-      .request(options)
-      .then((response) => {
-        this.listaSerietv = response.data.results;
-        this.isSearching = true;
-        console.log(this.listaSerietv);
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-},
-
-//  RICERCA FILMS
-
-searchFilms(){ 
-    const options = {
-      method: 'GET',
-      url: 'https://api.themoviedb.org/3/search/movie',
-      params: {query: this.query, include_adult: 'false', language: 'en-US', page: '1'},
-      headers: {
-       accept: 'application/json',
-       Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmOGYyYTNhZjllZDBhYzg4M2RkMWZlMTNiZDVjZjYyYyIsInN1YiI6IjY2NTc0NDA0YTM0ZDFlNzBkNWVmMWUyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Z-BjUO_PQ4fELYiDy7416HtxhzXgAwbiZJPdIn8o_nI'
-      }
-    };
-
-    axios
-        .request(options)
-        .then((response) => {
-          this.listaFilm = response.data.results;
-          this.isSearching = true;
-           console.log(this.listaFilm);
-        })
-        .catch(function (error) {
-           console.error(error);
-        });
+handleSearchResults(listaFilm, listaSerietv) {
+      this.listaFilm = listaFilm;
+      this.listaSerietv = listaSerietv;
+      this.isSearching = true;
 },
 
 // FUNZIONE PER GENERARE L'INDIRITTO DELLE IMMAGINI
@@ -74,12 +35,7 @@ getPosterUrl(path) {
     return path ? `https://image.tmdb.org/t/p/w342${path}` : 'https://via.placeholder.com/342x513?text=No+Image';
 },
 
-// RICERCA COMPLETA
-searchAll(){
-   this.searchFilms();
-   this.searchSerietv();
-},
-
+// FUNZIONE PER I FILM TRENDING
 trendingAll() {
     const options = {
       method: 'GET',
@@ -103,10 +59,10 @@ trendingAll() {
        });
 },
 
+// FUNZIONE PER ARROTONDARE IL VOTO
 convertToStars(vote) {
     return Math.ceil(vote / 2); 
 },
-
 
 },
 
@@ -115,6 +71,7 @@ created() {
 },
 
 mounted() {
+  
 }
 
 }
@@ -122,155 +79,53 @@ mounted() {
 </script>
 
 <template>
-  <header>
-    <h1>Boolflix</h1>
-    <div class="search-bar position-absolute top-0 end-0">
-      <input v-model="query" type="text" placeholder="Cerca un film...">
-      <button class="btn btn-danger" @click="searchAll">Cerca</button>
-    </div>
-  </header>
+
+  <!-- ***COMPONENTE HEADER*** -->
+  <AppHeader @search-results="handleSearchResults" />
+
 <!-- ****SEZIONE FILMS DI TENDENZA****   -->
-
-      <div v-if="!isSearching">
-        <h2>Trending</h2>
-        <div class="results">
-          <div v-for="elemento in trending" :key="elemento.id" class="card">
-            <img :src="getPosterUrl(elemento.poster_path)" alt="Poster del film">
-            <div class="card-overlay">
-              <h2>{{ elemento.title || elemento.name }}</h2>
-              <p><strong>Titolo Originale:</strong> {{ elemento.original_title || elemento.original_name }}</p>
-              <p><strong>Lingua:</strong> {{ elemento.original_language }}</p>
-              <p><strong>Voto:</strong>
-                <span v-for="n in 5" :key="n" class="star">
-                  <i v-if="n <= convertToStars(elemento.vote_average)" class="fa fa-star"></i>
-                  <i v-else class="fa fa-star-o"></i>
-                </span>
-              </p>
-              <p><strong>Overview:</strong> {{ elemento.overview }}</p>
-            </div>
+  <div v-if="!isSearching">
+    <h2 class="text-center mt-3 text-danger bg-black">Trending</h2>
+    <div class="results">
+        <div v-for="elemento in trending" :key="elemento.id" class="card">
+          <img :src="getPosterUrl(elemento.poster_path)" alt="Poster del film">
+          <div class="card-overlay">
+            <h2>{{ elemento.title || elemento.name }}</h2>
+            <p><strong>Titolo Originale:</strong> {{ elemento.original_title || elemento.original_name }}</p>
+            <p><strong>Lingua:</strong> {{ elemento.original_language }}</p>
+            <p><strong>Voto:</strong>
+              <span v-for="n in 5" :key="n" class="star">
+                <i v-if="n <= convertToStars(elemento.vote_average)" class="fa fa-star"></i>
+                <i v-else class="fa fa-star-o"></i>
+              </span>
+            </p>
+            <p><strong>Overview:</strong> {{ elemento.overview }}</p>
           </div>
         </div>
-      </div>
+    </div>
+  </div>
   
-
-<!-- ****SEZIONE FILMS*****   -->
-
-      <div v-if="isSearching">
-        <h2>Film</h2>
-        <div class="results">
-          <div v-for="film in listaFilm" :key="film.id" class="card">
-            <img :src="getPosterUrl(film.poster_path)" alt="Poster del film">
-            <div class="card-overlay">
-              <h2>{{ film.title || film.name }}</h2>
-              <p><strong>Titolo Originale:</strong> {{ film.original_title || film.original_name }}</p>
-              <p><strong>Lingua:</strong> {{ film.original_language }}</p>
-              <p><strong>Voto:</strong>
-                <span v-for="n in 5" :key="n" class="star">
-                  <i v-if="n <= convertToStars(film.vote_average)" class="fa fa-star"></i>
-                  <i v-else class="fa fa-star-o"></i>
-                </span>
-              </p>
-              <p><strong>Overview:</strong> {{ film.overview }}</p>
-            </div>
-          </div>
-        </div>
+<!-- ***COMPONENTE PER I FILMS*** -->
+  <div v-if="isSearching">
+    <h2 class="text-center text-danger mt-3 bg-black">Film</h2>
+      <div class="results">
+        <MovieCard v-for="film in listaFilm" :key="film.id" :film="film" />
       </div>
-  
-<!-- *****SEZIONE SERIE TV***** -->
-
-      <div v-if="isSearching">
-        <h2>Serie TV</h2>
-        <div class="results">
-          <div v-for="serie in listaSerietv" :key="serie.id" class="card">
-            <img :src="getPosterUrl(serie.poster_path)" alt="Poster del film">
-            <div class="card-overlay">
-              <h2>{{ serie.title || serie.name }}</h2>
-              <p><strong>Titolo Originale:</strong> {{ serie.original_title || serie.original_name }}</p>
-              <p><strong>Lingua:</strong> {{ serie.original_language }}</p>
-              <p><strong>Voto:</strong>
-                <span v-for="n in 5" :key="n" class="star">
-                  <i v-if="n <= convertToStars(serie.vote_average)" class="fa fa-star"></i>
-                  <i v-else class="fa fa-star-o"></i>
-                </span>
-              </p>
-              <p><strong>Overview:</strong> {{ serie.overview }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+  </div>
+      
+<!-- *****COMPONENTE SERIE TV***** -->
+  <div v-if="isSearching">
+    <h2 class="text-center text-danger mt-3 bg-black">Serie TV</h2>
+    <div class="results">
+        <SerietvCard v-for="serie in listaSerietv" :key="serie.id" :serie="serie" />
+    </div>
+  </div>
 </template>
 
 <style scoped>
-h1{
-  color: red;
-}
-
-.search-bar {
-  margin-bottom: 20px;
-}
-
-.search-bar input {
-  padding: 10px;
-  font-size: 16px;
-  width: 300px;
-}
-
-.search-bar button {
-  padding: 10px 20px;
-  font-size: 16px;
-}
-
 .results {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-}
-
-
-.card {
-  position: relative;
-  margin: 10px;
-  width: 340px;
-  height: 560px;
-  background-size: cover;
-  background-position: center;
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-
-.card:hover {
-  transform: scale(1.05);
-}
-
-.card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  padding: 10px;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.card:hover .card-overlay {
-  opacity: 1;
-}
-
-.star {
-    color: gold;
-    font-size: 20px;
-    margin-right: 2px;
-    margin-left: 2px;
 }
 </style>
