@@ -1,7 +1,21 @@
-# Vue 3 + Vite
+# Boolflix - App di Streaming ispirata a Netflix
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Boolflix è un'applicazione web ispirata a Netflix che consente agli utenti di cercare film e visualizzarne i dettagli. L'app recupera i dati dei film tramite chiamate API e offre un'interfaccia semplice e intuitiva per navigare tra diversi contenuti multimediali.
 
-## Recommended IDE Setup
+## Caratteristiche principali
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
+Ricerca film: Permette agli utenti di cercare film inserendo una parola chiave.
+
+Dettagli del film: Cliccando su un film, l'utente può accedere a una pagina con informazioni dettagliate, tra cui la descrizione, il punteggio, il genere, la data di rilascio e il cast.
+
+Interfaccia utente responsiva: Progettata per funzionare senza problemi su tutti i dispositivi, inclusi desktop, tablet e smartphone.
+
+API integration: I dati sui film vengono ottenuti dinamicamente tramite chiamate API.
+
+## Tecnologie utilizzate
+
+Framework: Vue.js 
+
+UI: Bootstrap
+
+API: I dati sui film sono recuperati tramite un'API esterna (ad esempio, The Movie Database - TMDb)
